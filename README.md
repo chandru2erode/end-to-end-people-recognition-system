@@ -1,1 +1,1 @@
-# end-to-end-people-recognition-system
+# End-to-End - People Recognition System
