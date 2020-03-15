@@ -117,7 +117,5 @@ def detect_nameless(known_face_encodings, known_face_names):
     cv2.destroyAllWindows()
 
 if __name__ == '__main__':
-    encoded_values = encode_known()
-    known_face_encodings, known_face_names = encoded_values
-    response = input("Do you want to encode unknown 'y' or 'n'?")
-    detect_nameless(known_face_encodings, known_face_names) if response == 'y' else print('Thanks!')
+    face_encodings, face_names = encode_known()
+    detect_nameless(face_encodings, face_names)
