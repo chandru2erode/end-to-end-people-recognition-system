@@ -13,7 +13,7 @@ def encode_known():
     known_face_encodings = []
     known_face_names = []
     known_faces_filenames = []
-
+    
     # Walk in the folder to add every file name to known_faces_filenames
     for (dirpath, dirnames, filenames) in os.walk('assets/img/users/'):
         known_faces_filenames.extend(filenames)
