@@ -1,0 +1,5 @@
+# ignore .vscode/ directory
+/.vscode
+
+#ignore node_modules sub-directory in the prs-front directory
+/prs-front/node_modules
