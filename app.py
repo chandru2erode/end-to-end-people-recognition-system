@@ -8,7 +8,7 @@ import numpy as np
 import re
 
 
-# Get the relativ path to this file (we will use it later)
+# Get the relative path to this file (we will use it later)
 FILE_PATH = os.path.dirname(os.path.realpath(__file__))
 
 # * ---------- Create App --------- *
@@ -45,7 +45,7 @@ def get_receive_data():
             connection = DATABASE_CONNECTION()
             cursor = connection.cursor()
 
-            # Query to check if the user as been saw by the camera today
+            # Query to check if the user as been seen by the camera today
             user_saw_today_sql_query =\
                 f"SELECT * FROM users WHERE date = '{json_data['date']}' AND name = '{json_data['name']}'"
 
@@ -53,9 +53,9 @@ def get_receive_data():
             result = cursor.fetchall()
             connection.commit()
 
-            # If use is already in the DB for today:
+            # If user is already in the DB for today:
             if result:
-               print('user IN')
+               print(f"{json_data['name']} IN")
                image_path = f"{FILE_PATH}/assets/img/{json_data['date']}/{json_data['name']}/departure.jpg"
 
                 # Save image
@@ -68,7 +68,7 @@ def get_receive_data():
                cursor.execute(update_user_query)
 
             else:
-                print("user OUT")
+                print(f"{json_data['name']} OUT")
                 # Save image
                 image_path = f"{FILE_PATH}/assets/img/history/{json_data['date']}/{json_data['name']}/arrival.jpg"
                 os.makedirs(f"{FILE_PATH}/assets/img/history/{json_data['date']}/{json_data['name']}", exist_ok=True)
