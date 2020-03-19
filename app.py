@@ -16,8 +16,7 @@ app = Flask(__name__)
 CORS(app, support_credentials=True)
 
 
-
-# * ---------- DATABASE CONFIG --------- *
+# # * ---------- DATABASE CONFIG --------- *
 # DATABASE_USER = os.environ['DATABASE_USER']
 # DATABASE_PASSWORD = os.environ['DATABASE_PASSWORD']
 # DATABASE_HOST = os.environ['DATABASE_HOST']
@@ -25,20 +24,23 @@ CORS(app, support_credentials=True)
 # DATABASE_NAME = os.environ['DATABASE_NAME']
 
 def DATABASE_CONNECTION():
-    return psycopg2.connect(user="postgres",
-                              password="postgres",
-                              host="localhost",
-                              port="5000",
-                              database="face_recognition")
-
+    try:
+        print("Trying to connect.....")
+        return psycopg2.connect(user="tsuser",
+                                password="tsuser123",
+                                host="127.0.0.1",
+                                port="5432",
+                                database="facial_recognition",
+                                connect_timeout=3)
+    except Exception as e :
+        print("[!] ",e)
 
 # * --------------------  ROUTES ------------------- *
 # * ---------- Get data from the face recognition ---------- *
-@app.route('/receive_data', methods=['POST'])
+@app.route('/receive_data', methods=['GET','POST'])
 def get_receive_data():
     if request.method == 'POST':
         json_data = request.get_json()
-
         # Check if the user is already in the DB
         try:
             # Connect to the DB
@@ -55,11 +57,11 @@ def get_receive_data():
 
             # If user is already in the DB for today:
             if result:
-               print(f"{json_data['name']} IN")
-               image_path = f"{FILE_PATH}/assets/img/{json_data['date']}/{json_data['name']}/departure.jpg"
+               print(f"{json_data['name']} OUT")
+               image_path = f"{FILE_PATH}/assets/img/departure/{json_data['date']}/{json_data['name']}.jpg"
 
                 # Save image
-               os.makedirs(f"{FILE_PATH}/assets/img/{json_data['date']}/{json_data['name']}", exist_ok=True)
+               os.makedirs(f"{FILE_PATH}/assets/img/departure/{json_data['date']}", exist_ok=True)
                cv2.imwrite(image_path, np.array(json_data['picture_array']))
                json_data['picture_path'] = image_path
 
@@ -68,10 +70,10 @@ def get_receive_data():
                cursor.execute(update_user_query)
 
             else:
-                print(f"{json_data['name']} OUT")
+                print(f"{json_data['name']} IN")
                 # Save image
-                image_path = f"{FILE_PATH}/assets/img/history/{json_data['date']}/{json_data['name']}/arrival.jpg"
-                os.makedirs(f"{FILE_PATH}/assets/img/history/{json_data['date']}/{json_data['name']}", exist_ok=True)
+                image_path = f"{FILE_PATH}/assets/img/arrival/{json_data['date']}/{json_data['name']}.jpg"
+                os.makedirs(f"{FILE_PATH}/assets/img/arrival/{json_data['date']}", exist_ok=True)
                 cv2.imwrite(image_path, np.array(json_data['picture_array']))
                 json_data['picture_path'] = image_path
 
@@ -222,8 +224,25 @@ def delete_employee(name):
 
     return jsonify(answer)
 
+# @app.route('/insert_data', methods=['GET','POST'])
+# def insert_data():
+#     if request.method == 'GET':
+#         try:
+#             # Connect to the DB
+#             print('Hi')
+#             connection = DATABASE_CONNECTION()
+#             print(connection)
+#             cursor = connection.cursor()
+            
+#             insert_query = f"INSERT INTO users (name, arrival_time) VALUES ('Chandrakumar', '09:30 AM');"
+#             cursor.execute(insert_query)
+#             connection.commit()
+#         except Exception as err:
+#             print(err)
+#     return "Inserted Successfully in the Database."
+
                                  
 # * -------------------- RUN SERVER -------------------- *
 if __name__ == '__main__':
     # * --- DEBUG MODE: --- *
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    app.run( debug=True)
