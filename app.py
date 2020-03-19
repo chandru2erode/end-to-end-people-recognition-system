@@ -16,7 +16,6 @@ app = Flask(__name__)
 CORS(app, support_credentials=True)
 
 
-
 # * ---------- DATABASE CONFIG --------- *
 # DATABASE_USER = os.environ['DATABASE_USER']
 # DATABASE_PASSWORD = os.environ['DATABASE_PASSWORD']
@@ -24,19 +23,23 @@ CORS(app, support_credentials=True)
 # DATABASE_PORT = os.environ['DATABASE_PORT']
 # DATABASE_NAME = os.environ['DATABASE_NAME']
 
+
 def DATABASE_CONNECTION():
-    return psycopg2.connect(user="postgres",
-                              password="postgres",
-                              host="localhost",
-                              port="5000",
-                              database="face_recognition")
+    return psycopg2.connect(
+        user="USERNAME",
+        password="",
+        host="127.0.0.1",
+        port="5432",
+        database="facial_recognition",
+        connect_timeout=4,
+    )
 
 
 # * --------------------  ROUTES ------------------- *
 # * ---------- Get data from the face recognition ---------- *
-@app.route('/receive_data', methods=['POST'])
+@app.route("/receive_data", methods=["POST"])
 def get_receive_data():
-    if request.method == 'POST':
+    if request.method == "POST":
         json_data = request.get_json()
 
         # Check if the user is already in the DB
@@ -46,8 +49,7 @@ def get_receive_data():
             cursor = connection.cursor()
 
             # Query to check if the user as been seen by the camera today
-            user_saw_today_sql_query =\
-                f"SELECT * FROM users WHERE date = '{json_data['date']}' AND name = '{json_data['name']}'"
+            user_saw_today_sql_query = f"SELECT * FROM users WHERE date = '{json_data['date']}' AND name = '{json_data['name']}'"
 
             cursor.execute(user_saw_today_sql_query)
             result = cursor.fetchall()
@@ -55,8 +57,8 @@ def get_receive_data():
 
             # If user is already in the DB for today:
             if result:
-               print(f"{json_data['name']} IN")
-               image_path = f"{FILE_PATH}/assets/img/{json_data['date']}/{json_data['name']}/departure.jpg"
+                print(f"{json_data['name']} IN")
+                image_path = f"{FILE_PATH}/assets/img/{json_data['date']}/{json_data['name']}/departure.jpg"
 
                 # Save image
                os.makedirs(f"{FILE_PATH}/assets/img/{json_data['date']}/{json_data['name']}", exist_ok=True)
@@ -64,8 +66,8 @@ def get_receive_data():
                json_data['picture_path'] = image_path
 
                 # Update user in the DB
-               update_user_query = f"UPDATE users SET departure_time = '{json_data['hour']}', departure_picture = '{json_data['picture_path']}' WHERE name = '{json_data['name']}' AND date = '{json_data['date']}'"
-               cursor.execute(update_user_query)
+                update_user_query = f"UPDATE users SET departure_time = '{json_data['hour']}', departure_picture = '{json_data['picture_path']}' WHERE name = '{json_data['name']}' AND date = '{json_data['date']}'"
+                cursor.execute(update_user_query)
 
             else:
                 print(f"{json_data['name']} OUT")
@@ -95,7 +97,7 @@ def get_receive_data():
 
 
 # * ---------- Get all the data of an employee ---------- *
-@app.route('/get_employee/<string:name>', methods=['GET'])
+@app.route("/get_employee/<string:name>", methods=["GET"])
 def get_employee(name):
     answer_to_send = {}
     # Check if the user is already in the DB
@@ -112,21 +114,21 @@ def get_employee(name):
 
         # if the user exist in the db:
         if result:
-            print('RESULT: ',result)
+            print("RESULT: ", result)
             # Structure the data and put the dates in string for the front
-            for k,v in enumerate(result):
+            for k, v in enumerate(result):
                 answer_to_send[k] = {}
-                for ko,vo in enumerate(result[k]):
+                for ko, vo in enumerate(result[k]):
                     answer_to_send[k][ko] = str(vo)
-            print('answer_to_send: ', answer_to_send)
+            print("answer_to_send: ", answer_to_send)
         else:
-            answer_to_send = {'error': 'User not found...'}
+            answer_to_send = {"error": "User not found..."}
 
     except (Exception, psycopg2.DatabaseError) as error:
         print("ERROR DB: ", error)
     finally:
         # closing database connection:
-        if (connection):
+        if connection:
             cursor.close()
             connection.close()
 
@@ -135,7 +137,7 @@ def get_employee(name):
 
 
 # * --------- Get the 5 last users seen by the camera --------- *
-@app.route('/get_5_last_entries', methods=['GET'])
+@app.route("/get_5_last_entries", methods=["GET"])
 def get_5_last_entries():
     answer_to_send = {}
     # Check if the user is already in the DB
@@ -159,13 +161,13 @@ def get_5_last_entries():
                 for ko, vo in enumerate(result[k]):
                     answer_to_send[k][ko] = str(vo)
         else:
-            answer_to_send = {'error': 'error detect'}
+            answer_to_send = {"error": "error detect"}
 
     except (Exception, psycopg2.DatabaseError) as error:
         print("ERROR DB: ", error)
     finally:
         # closing database connection:
-        if (connection):
+        if connection:
             cursor.close()
             connection.close()
 
@@ -174,25 +176,25 @@ def get_5_last_entries():
 
 
 # * ---------- Add new employee ---------- *
-@app.route('/add_employee', methods=['POST'])
+@app.route("/add_employee", methods=["POST"])
 @cross_origin(supports_credentials=True)
 def add_employee():
     try:
         # Get the picture from the request
-        image_file = request.files['image']
-        print(request.form['nameOfEmployee'])
+        image_file = request.files["image"]
+        print(request.form["nameOfEmployee"])
 
         # Store it in the folder of the know faces:
         file_path = os.path.join(f"assets/img/users/{request.form['nameOfEmployee']}.jpg")
         image_file.save(file_path)
-        answer = 'new employee succesfully added'
+        answer = "new employee succesfully added"
     except:
-        answer = 'Error while adding new employee. Please try later...'
+        answer = "Error while adding new employee. Please try later..."
     return jsonify(answer)
 
 
 # * ---------- Get employee list ---------- *
-@app.route('/get_employee_list', methods=['GET'])
+@app.route("/get_employee_list", methods=["GET"])
 def get_employee_list():
     employee_list = {}
 
@@ -209,21 +211,46 @@ def get_employee_list():
 
 
 # * ---------- Delete employee ---------- *
-@app.route('/delete_employee/<string:name>', methods=['GET'])
+@app.route("/delete_employee/<string:name>", methods=["GET"])
 def delete_employee(name):
     try:
         # Remove the picture of the employee from the user's folder:
-        print('name: ', name)
-        file_path = os.path.join(f'assets/img/users/{name}.jpg')
+        print("name: ", name)
+        file_path = os.path.join(f"assets/img/users/{name}.jpg")
         os.remove(file_path)
-        answer = 'Employee succesfully removed'
+        answer = "Employee succesfully removed"
     except:
-        answer = 'Error while deleting new employee. Please try later'
+        answer = "Error while deleting new employee. Please try later"
 
     return jsonify(answer)
 
-                                 
+
+@app.route("/<string:name>,<string:time>", methods=["GET", "POST"])
+def insert_user(name, time):
+    if request.method == "GET":
+        try:
+            print(name)
+            if name == "favicon.ico":
+                raise Exception("Favicon AGAIN...!")
+            print("Not favicon.ico")
+            connection = DATABASE_CONNECTION()
+            print(connection)
+            cursor = connection.cursor()
+
+            insert_query = (
+                f"INSERT INTO users (name, arrival_time) VALUES ({name}, {time});"
+            )
+            cursor.execute(insert_query)
+            connection.commit()
+        except Exception as ex:
+            print(ex)
+        finally:
+            connection.close()
+    return "*** Success ***"
+
+
 # * -------------------- RUN SERVER -------------------- *
-if __name__ == '__main__':
+if __name__ == "__main__":
     # * --- DEBUG MODE: --- *
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    app.run(host="127.0.0.1", port=5000, debug=True)
+
