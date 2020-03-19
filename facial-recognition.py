@@ -84,12 +84,11 @@ while True:
 
         # * ---------- Initialyse JSON to EXPORT --------- *
         json_to_export = {}
-        
+        print(known_face_encodings)
         for face_encoding in face_encodings:
             # See if the face is a match for the known face(s)
             matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
             name = "Unknown"
-
             # # If a match was found in known_face_encodings, just use the first one.
             # if True in matches:
             #     first_match_index = matches.index(True)
@@ -110,8 +109,8 @@ while True:
                 # * ---------- SEND data to API --------- *
 
 
-                # r = requests.post(url='http://127.0.0.1:5000/receive_data', json=json_to_export)
-                # print("Status: ", r.status_code)
+                r = requests.post(url='http://127.0.0.1:5000/receive_data', json=json_to_export)
+                print("Status: ", r.status_code)
 
             face_names.append(name)
         
