@@ -57,13 +57,13 @@ def get_receive_data():
 
             # If user is already in the DB for today:
             if result:
-               print(f"{json_data['name']} OUT")
-               image_path = f"{FILE_PATH}/assets/img/departure/{json_data['date']}/{json_data['name']}.jpg"
+                print(f"{json_data['name']} OUT")
+                image_path = f"{FILE_PATH}/assets/img/departure/{json_data['date']}/{json_data['name']}.jpg"
 
                 # Save image
-               os.makedirs(f"{FILE_PATH}/assets/img/departure/{json_data['date']}", exist_ok=True)
-               cv2.imwrite(image_path, np.array(json_data['picture_array']))
-               json_data['picture_path'] = image_path
+                os.makedirs(f"{FILE_PATH}/assets/img/departure/{json_data['date']}", exist_ok=True)
+                cv2.imwrite(image_path, np.array(json_data['picture_array']))
+                json_data['picture_path'] = image_path
 
                 # Update user in the DB
                 update_user_query = f"UPDATE users SET departure_time = '{json_data['hour']}', departure_picture = '{json_data['picture_path']}' WHERE name = '{json_data['name']}' AND date = '{json_data['date']}'"

@@ -1,6 +1,9 @@
 # ignore .vscode/ directory
 /.vscode
 
+# ignore .pylintrc file
+/.pylintrc
+
 # ignore images in arrival and departure directory
 /assets/img/arrival
 /assets/img/departure
