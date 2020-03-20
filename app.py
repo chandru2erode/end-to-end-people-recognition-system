@@ -1,11 +1,11 @@
 # * ---------- IMPORTS --------- *
+import os
+import re
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
-import os
 import psycopg2
 import cv2
 import numpy as np
-import re
 
 
 # Get the relative path to this file (we will use it later)
@@ -28,8 +28,8 @@ def DATABASE_CONNECTION():
     try:
         print("Trying to connect.....")
         return psycopg2.connect(
-            user="saroopa",
-            password="",
+            user="tsuser",
+            password="tsuser123",
             host="127.0.0.1",
             port="5432",
             database="facial_recognition",
@@ -52,7 +52,7 @@ def get_receive_data():
             cursor = connection.cursor()
 
             # Query to check if the user as been seen by the camera today
-            user_saw_today_sql_query = f"SELECT * FROM users WHERE date = '{json_data['date']}' AND name = '{json_data['name']}'"
+            user_saw_today_sql_query = f"SELECT * FROM records WHERE date = '{json_data['date']}' AND name = '{json_data['name']}'"
 
             cursor.execute(user_saw_today_sql_query)
             result = cursor.fetchall()
@@ -72,7 +72,7 @@ def get_receive_data():
                 json_data["picture_path"] = image_path
 
                 # Update user in the DB
-                update_user_query = f"UPDATE users SET departure_time = '{json_data['hour']}', departure_picture = '{json_data['picture_path']}' WHERE name = '{json_data['name']}' AND date = '{json_data['date']}'"
+                update_user_query = f"UPDATE records SET departure_time = '{json_data['hour']}', departure_picture = '{json_data['picture_path']}' WHERE name = '{json_data['name']}' AND date = '{json_data['date']}'"
                 cursor.execute(update_user_query)
 
             else:
@@ -86,7 +86,7 @@ def get_receive_data():
                 json_data["picture_path"] = image_path
 
                 # Create a new row for the user today:
-                insert_user_query = f"INSERT INTO users (name, date, arrival_time, arrival_picture) VALUES ('{json_data['name']}', '{json_data['date']}', '{json_data['hour']}', '{json_data['picture_path']}')"
+                insert_user_query = f"INSERT INTO records (name, date, arrival_time, arrival_picture) VALUES ('{json_data['name']}', '{json_data['date']}', '{json_data['hour']}', '{json_data['picture_path']}')"
                 cursor.execute(insert_user_query)
 
         except (Exception, psycopg2.DatabaseError) as error:
@@ -105,8 +105,9 @@ def get_receive_data():
 
 
 # * ---------- Get all the data of an employee ---------- *
-@app.route("/get_employee/<string:name>", methods=["GET"])
+@app.route("/get_employee/", methods=["GET"])
 def get_employee(name):
+    name = request.args.get('name', default="", type=str)
     answer_to_send = {}
     # Check if the user is already in the DB
     try:
@@ -114,13 +115,13 @@ def get_employee(name):
         connection = DATABASE_CONNECTION()
         cursor = connection.cursor()
         # Query the DB to get all the data of a user:
-        user_information_sql_query = f"SELECT * FROM users WHERE name = '{name}'"
+        user_information_sql_query = f"SELECT * FROM records WHERE name = '{name}'"
 
         cursor.execute(user_information_sql_query)
         result = cursor.fetchall()
 
         column_cursor = connection.cursor()
-        schema_query = "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'users'"
+        schema_query = "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'records'"
         column_cursor.execute(schema_query)
         column_names = column_cursor.fetchall()
 
@@ -130,7 +131,7 @@ def get_employee(name):
         if result:
             # Structure the data and put the dates in string for the front
             for idx, value in enumerate(result):
-                # answer_to_send[k] = {}
+                answer_to_send[k] = {}
                 for idx_o, value_o in enumerate(value):
                     answer_to_send[idx][column_names[idx_o][0]] = str(value_o)
         else:
@@ -159,13 +160,13 @@ def get_5_last_entries():
 
         cursor = connection.cursor()
         # Query the DB to get all the data of a user:
-        lasts_entries_sql_query = f"SELECT * FROM users ORDER BY id DESC LIMIT 5;"
+        lasts_entries_sql_query = f"SELECT * FROM records ORDER BY id DESC LIMIT 5;"
 
         cursor.execute(lasts_entries_sql_query)
         result = cursor.fetchall()
 
         column_cursor = connection.cursor()
-        schema_query = "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'users'"
+        schema_query = "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'records'"
         column_cursor.execute(schema_query)
         column_names = column_cursor.fetchall()
 
@@ -257,7 +258,8 @@ def insert_user(name, time):
             print(connection)
             cursor = connection.cursor()
 
-            insert_query = f"INSERT INTO users (name) VALUES ({name});"
+
+            insert_query = f"INSERT INTO records (name) VALUES ({name});"
             cursor.execute(insert_query)
             connection.commit()
         except Exception as ex:
