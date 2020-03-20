@@ -27,18 +27,21 @@ CORS(app, support_credentials=True)
 def DATABASE_CONNECTION():
     try:
         print("Trying to connect.....")
-        return psycopg2.connect(user="tsuser",
-                                password="tsuser123",
-                                host="127.0.0.1",
-                                port="5432",
-                                database="facial_recognition",
-                                connect_timeout=3)
-    except Exception as e :
-        print("[!] ",e)
+        return psycopg2.connect(
+            user="saroopa",
+            password="",
+            host="127.0.0.1",
+            port="5432",
+            database="facial_recognition",
+            connect_timeout=3,
+        )
+    except Exception as e:
+        print("[!] ", e)
+
 
 # * --------------------  ROUTES ------------------- *
 # * ---------- Get data from the face recognition ---------- *
-@app.route('/receive_data', methods=['GET','POST'])
+@app.route("/receive_data", methods=["GET", "POST"])
 def get_receive_data():
     if request.method == "POST":
         json_data = request.get_json()
@@ -57,13 +60,16 @@ def get_receive_data():
 
             # If user is already in the DB for today:
             if result:
-               print(f"{json_data['name']} OUT")
-               image_path = f"{FILE_PATH}/assets/img/departure/{json_data['date']}/{json_data['name']}.jpg"
+                print(f"{json_data['name']} OUT")
+                image_path = f"{FILE_PATH}/assets/img/departure/{json_data['date']}/{json_data['name']}.jpg"
 
                 # Save image
-               os.makedirs(f"{FILE_PATH}/assets/img/departure/{json_data['date']}", exist_ok=True)
-               cv2.imwrite(image_path, np.array(json_data['picture_array']))
-               json_data['picture_path'] = image_path
+                os.makedirs(
+                    f"{FILE_PATH}/assets/img/departure/{json_data['date']}",
+                    exist_ok=True,
+                )
+                cv2.imwrite(image_path, np.array(json_data["picture_array"]))
+                json_data["picture_path"] = image_path
 
                 # Update user in the DB
                 update_user_query = f"UPDATE users SET departure_time = '{json_data['hour']}', departure_picture = '{json_data['picture_path']}' WHERE name = '{json_data['name']}' AND date = '{json_data['date']}'"
@@ -73,9 +79,11 @@ def get_receive_data():
                 print(f"{json_data['name']} IN")
                 # Save image
                 image_path = f"{FILE_PATH}/assets/img/arrival/{json_data['date']}/{json_data['name']}.jpg"
-                os.makedirs(f"{FILE_PATH}/assets/img/arrival/{json_data['date']}", exist_ok=True)
-                cv2.imwrite(image_path, np.array(json_data['picture_array']))
-                json_data['picture_path'] = image_path
+                os.makedirs(
+                    f"{FILE_PATH}/assets/img/arrival/{json_data['date']}", exist_ok=True
+                )
+                cv2.imwrite(image_path, np.array(json_data["picture_array"]))
+                json_data["picture_path"] = image_path
 
                 # Create a new row for the user today:
                 insert_user_query = f"INSERT INTO users (name, date, arrival_time, arrival_picture) VALUES ('{json_data['name']}', '{json_data['date']}', '{json_data['hour']}', '{json_data['picture_path']}')"
@@ -110,17 +118,21 @@ def get_employee(name):
 
         cursor.execute(user_information_sql_query)
         result = cursor.fetchall()
+
+        column_cursor = connection.cursor()
+        schema_query = "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'users'"
+        column_cursor.execute(schema_query)
+        column_names = column_cursor.fetchall()
+
         connection.commit()
 
         # if the user exist in the db:
         if result:
-            print("RESULT: ", result)
             # Structure the data and put the dates in string for the front
-            for k, v in enumerate(result):
-                answer_to_send[k] = {}
-                for ko, vo in enumerate(result[k]):
-                    answer_to_send[k][ko] = str(vo)
-            print("answer_to_send: ", answer_to_send)
+            for idx, value in enumerate(result):
+                # answer_to_send[k] = {}
+                for idx_o, value_o in enumerate(value):
+                    answer_to_send[idx][column_names[idx_o][0]] = str(value_o)
         else:
             answer_to_send = {"error": "User not found..."}
 
@@ -151,15 +163,21 @@ def get_5_last_entries():
 
         cursor.execute(lasts_entries_sql_query)
         result = cursor.fetchall()
+
+        column_cursor = connection.cursor()
+        schema_query = "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'users'"
+        column_cursor.execute(schema_query)
+        column_names = column_cursor.fetchall()
+
         connection.commit()
 
         # if DB is not empty:
         if result:
             # Structure the data and put the dates in string for the front
-            for k, v in enumerate(result):
-                answer_to_send[k] = {}
-                for ko, vo in enumerate(result[k]):
-                    answer_to_send[k][ko] = str(vo)
+            for idx, value in enumerate(result):
+                answer_to_send[idx] = {}
+                for idx_o, value_o in enumerate(value):
+                    answer_to_send[idx][column_names[idx_o][0]] = str(value_o)
         else:
             answer_to_send = {"error": "error detect"}
 
@@ -185,7 +203,9 @@ def add_employee():
         print(request.form["nameOfEmployee"])
 
         # Store it in the folder of the know faces:
-        file_path = os.path.join(f"assets/img/users/{request.form['nameOfEmployee']}.jpg")
+        file_path = os.path.join(
+            f"assets/img/users/{request.form['nameOfEmployee']}.jpg"
+        )
         image_file.save(file_path)
         answer = "new employee succesfully added"
     except:
@@ -225,7 +245,7 @@ def delete_employee(name):
     return jsonify(answer)
 
 
-@app.route("/<string:name>,<string:time>", methods=["GET", "POST"])
+@app.route("/<string:name>", methods=["GET", "POST"])
 def insert_user(name, time):
     if request.method == "GET":
         try:
@@ -237,9 +257,7 @@ def insert_user(name, time):
             print(connection)
             cursor = connection.cursor()
 
-            insert_query = (
-                f"INSERT INTO users (name, arrival_time) VALUES ({name}, {time});"
-            )
+            insert_query = f"INSERT INTO users (name) VALUES ({name});"
             cursor.execute(insert_query)
             connection.commit()
         except Exception as ex:
