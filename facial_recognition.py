@@ -115,8 +115,7 @@ while True:
                 # * ---------- SAVE data to send to the API -------- *
                 JSON_TO_EXPORT['name'] = name
                 JSON_TO_EXPORT['hour'] = f'{time.localtime().tm_hour}:{time.localtime().tm_min}'
-                JSON_TO_EXPORT['date'] = f'{time.localtime().tm_year}-{time.localtime().tm_mon}\
-                                        -{time.localtime().tm_mday}'
+                JSON_TO_EXPORT['date'] = f'{time.localtime().tm_year}-{time.localtime().tm_mon}-{time.localtime().tm_mday}'
                 JSON_TO_EXPORT['picture_array'] = FRAME.tolist()
 
                 # * ---------- SEND data to API --------- *
