@@ -28,8 +28,8 @@ def DATABASE_CONNECTION():
     try:
         print("Trying to connect.....")
         return psycopg2.connect(
-            user="saroopa",
-            password="",
+            user="USERNAME",
+            password="PASSWORD",
             host="127.0.0.1",
             port="5432",
             database="facial_recognition",
@@ -105,8 +105,9 @@ def get_receive_data():
 
 
 # * ---------- Get all the data of an employee ---------- *
-@app.route("/get_employee/<string:name>", methods=["GET"])
-def get_employee(name):
+@app.route("/get_employee", methods=["GET"])
+def get_employee():
+    name = request.args.get("name", default="", type=str)
     answer_to_send = {}
     # Check if the user is already in the DB
     try:
@@ -130,7 +131,7 @@ def get_employee(name):
         if result:
             # Structure the data and put the dates in string for the front
             for idx, value in enumerate(result):
-                # answer_to_send[k] = {}
+                answer_to_send[idx] = {}
                 for idx_o, value_o in enumerate(value):
                     answer_to_send[idx][column_names[idx_o][0]] = str(value_o)
         else:
