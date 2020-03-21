@@ -4,6 +4,7 @@ import EmployeeDetails from "./components/empDetails";
 import AddEmployee from "./components/addEmp";
 import ALlEmployeeDetails from "./components/allEmpDetails";
 import RecentRecords from "./components/recentRecords";
+import DeleteEmployee from "./components/deleteEmp";
 
 function App() {
   return (
@@ -11,7 +12,8 @@ function App() {
       {/* <EmployeeDetails /> */}
       {/* <AddEmployee /> */}
       {/* <ALlEmployeeDetails /> */}
-      <RecentRecords />
+      {/* <RecentRecords /> */}
+      <DeleteEmployee />
     </div>
   );
 }
