@@ -245,16 +245,16 @@ def add_employee():
 # * ---------- Get employee list ---------- *
 @app.route("/get_employee_list", methods=["GET"])
 def get_employee_list():
-    employee_list = {}
+    answer_to_send = {}
     try:
         # Walk in the user folder to get the user list
-        walk_count = 0
+        """ walk_count = 0
         for file_name in os.listdir(f"{FILE_PATH}/assets/img/users/"):
             # Capture the employee's name with the file's name
             name = re.findall("(.*)\.jpg", file_name)
             if name:
                 employee_list[walk_count] = name[0]
-            walk_count += 1
+            walk_count += 1 """
 
         # Connect to DB
         connection = DATABASE_CONNECTION()
@@ -264,6 +264,9 @@ def get_employee_list():
         cursor.execute(get_employee_list_query)
 
         employee_list = cursor.fetchall()
+
+        for key, value in enumerate(employee_list):
+            answer_to_send[key] = value[0]
     except:
         return f"Unable to fetch the employee list. Please try after sometime."
     finally:
@@ -275,7 +278,7 @@ def get_employee_list():
             connection.close()
             print("PostgreSQL connection is closed")
 
-    return jsonify(employee_list)
+    return jsonify(answer_to_send)
 
 
 # * ---------- Delete employee ---------- *
