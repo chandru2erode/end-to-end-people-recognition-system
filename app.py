@@ -27,8 +27,8 @@ CORS(app, support_credentials=True)
 def DATABASE_CONNECTION():
     try:
         return psycopg2.connect(
-            user="USERNAME",
-            password="PASSWORD",
+            user="saroopa",
+            password="",
             host="127.0.0.1",
             port="5432",
             database="facial_recognition",
@@ -204,10 +204,14 @@ def get_5_last_entries():
 @app.route("/add_employee", methods=["POST"])
 @cross_origin(supports_credentials=True)
 def add_employee():
+    answer = {}
     try:
         # Get the picture from the request
         image_file = request.files["image"]
         name_of_user = request.form["nameOfEmployee"]
+
+        # image_file = request.args.get("image", default="")
+        # name_of_user = request.args.get("nameOfEmployee", default="", type=str)
 
         # Store it in the folder of the know faces:
         file_path = os.path.join(f"{FILE_PATH}/assets/img/users/{name_of_user}.jpg")
@@ -221,9 +225,11 @@ def add_employee():
         insert_new_user_query = f"INSERT INTO users (name, photo_path) VALUES ('{name_of_user}', '{file_path}');"
         cursor.execute(insert_new_user_query)
 
-        answer = f"New employee {name_of_user} succesfully added"
+        answer["message"] = f"New employee {name_of_user} succesfully added"
     except:
-        answer = f"Error while adding new employee {name_of_user}. Please try later..."
+        answer[
+            "message"
+        ] = f"Error while adding new employee {name_of_user}. Please try later..."
     finally:
         connection.commit()
 
