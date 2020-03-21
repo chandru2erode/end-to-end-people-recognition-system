@@ -155,9 +155,10 @@ def get_employee():
     return jsonify(answer_to_send)
 
 
-# * --------- Get the 5 last users seen by the camera --------- *
-@app.route("/get_5_last_entries", methods=["GET"])
+# * --------- Get the n last users seen by the camera --------- *
+@app.route("/get_n_last_entries", methods=["GET"])
 def get_5_last_entries():
+    n = request.args.get("n", default=5, type=int)
     answer_to_send = {}
     # Check if the user is already in the DB
     try:
@@ -166,7 +167,7 @@ def get_5_last_entries():
 
         cursor = connection.cursor()
         # Query the DB to get all the data of a user:
-        lasts_entries_sql_query = f"SELECT * FROM records ORDER BY id DESC LIMIT 5;"
+        lasts_entries_sql_query = f"SELECT * FROM records ORDER BY id DESC LIMIT {n};"
 
         cursor.execute(lasts_entries_sql_query)
         result = cursor.fetchall()
