@@ -283,10 +283,11 @@ def get_employee_list():
 
 
 # * ---------- Delete employee ---------- *
-@app.route("/delete_employee/", methods=["GET"])
+@app.route("/delete_employee", methods=["GET"])
 def delete_employee():
+    employee_name = request.args.get("name", default="", type=str)
+    answer_to_send = {}
     try:
-        employee_name = request.args.get("employee_name", default="", type=str)
         # Remove the picture of the employee from the user's folder:
         print("name: ", employee_name)
         file_path = os.path.join(f"{FILE_PATH}/assets/img/users/{employee_name}.jpg")
@@ -300,19 +301,20 @@ def delete_employee():
         delete_user_query = f"DELETE FROM users WHERE name = '{employee_name}';"
         cursor.execute(delete_user_query)
 
-        answer = f"Employee {employee_name} succesfully removed."
+        answer_to_send["message"] = f"Employee {employee_name} succesfully removed."
     except:
-        answer = "Error while deleting employee {employee_name}. Please try again."
+        answer_to_send[
+            "message"
+        ] = f"Error while deleting employee {employee_name}. Please try again."
     finally:
-        connection.commit()
-
         if connection:
+            connection.commit()
             # Close Database connection
             cursor.close()
             connection.close()
             print("PostgreSQL connection is closed")
 
-    return jsonify(answer)
+    return jsonify(answer_to_send)
 
 
 # @app.route("/<string:name>", methods=["GET", "POST"])
