@@ -15,7 +15,7 @@ class App extends Component {
     this.state = {
       response: ""
     };
-    // this.runPythonScript();
+    this.runPythonScript();
   }
 
   runPythonScript = () => {
