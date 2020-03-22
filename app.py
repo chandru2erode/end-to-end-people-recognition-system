@@ -317,6 +317,21 @@ def delete_employee():
     return jsonify(answer_to_send)
 
 
+@app.route("/run_script", methods=["GET"])
+def run_script():
+    answer_to_send = {}
+    try:
+        os.system("python facial_recognition.py")
+        answer_to_send["message"] = "Script successfully executed"
+    except Exception as ex:
+        print(ex)
+        answer_to_send["message"] = "Cannot run the script"
+    finally:
+        print("finished.")
+
+    return answer_to_send
+
+
 # @app.route("/<string:name>", methods=["GET", "POST"])
 # def insert_user(name):
 #     if request.method == "GET":
