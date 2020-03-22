@@ -36,6 +36,7 @@ class DeleteEmployee extends Component {
   render() {
     return (
       <div>
+        <h2>Delete Employee</h2>
         <input
           type="text"
           name="name"
@@ -45,6 +46,7 @@ class DeleteEmployee extends Component {
         <input type="button" value="Delete" onClick={this.handleRequest} />
         <br />
         {this.state.response}
+        <hr />
       </div>
     );
   }

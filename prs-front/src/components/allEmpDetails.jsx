@@ -22,15 +22,17 @@ class ALlEmployeeDetails extends Component {
 
   createList = () => {
     return Object.keys(this.state.response).map(key => {
-      return <li>{this.state.response[key]}</li>;
+      return <li key={key}>{this.state.response[key]}</li>;
     });
   };
 
   render() {
     return (
       <div>
+        <h2>List of all employees</h2>
         <input type="button" value="Refresh" onClick={this.handleRequest} />
         <ul>{this.createList()}</ul>
+        <hr />
       </div>
     );
   }

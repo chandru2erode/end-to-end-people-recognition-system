@@ -287,27 +287,41 @@ def get_employee_list():
 def delete_employee():
     employee_name = request.args.get("name", default="", type=str)
     answer_to_send = {}
+    does_exist = ""
     try:
-        # Remove the picture of the employee from the user's folder:
         print("name: ", employee_name)
-        file_path = os.path.join(f"{FILE_PATH}/assets/img/users/{employee_name}.jpg")
-        os.remove(file_path)
-
         # Connect to DB
         connection = DATABASE_CONNECTION()
-        cursor = connection.cursor()
+        existence_cursor = connection.cursor()
 
-        # Delete the user row from the users table:
-        delete_user_query = f"DELETE FROM users WHERE name = '{employee_name}';"
-        cursor.execute(delete_user_query)
+        # Check if the employee_name exists in the users table
+        existence = f"SELECT EXISTS (SELECT 1 FROM users WHERE name='{employee_name}');"
+        existence_cursor.execute(existence)
+        does_exist = existence_cursor.fetchall()
 
-        answer_to_send["message"] = f"Employee {employee_name} succesfully removed."
-    except:
+        if does_exist[0][0]:
+            # Remove the picture of the employee from the user's folder:
+            file_path = os.path.join(
+                f"{FILE_PATH}/assets/img/users/{employee_name}.jpg"
+            )
+            os.remove(file_path)
+
+            cursor = connection.cursor()
+
+            # Delete the user row from the users table:
+            delete_user_query = f"DELETE FROM users WHERE name = '{employee_name}';"
+            cursor.execute(delete_user_query)
+
+            answer_to_send["message"] = f"Employee {employee_name} succesfully removed."
+        else:
+            answer_to_send["message"] = f"Employee {employee_name} not found."
+    except Exception as ex:
+        print(ex)
         answer_to_send[
             "message"
         ] = f"Error while deleting employee {employee_name}. Please try again."
     finally:
-        if connection:
+        if does_exist[0][0] and connection:
             connection.commit()
             # Close Database connection
             cursor.close()
@@ -315,6 +329,21 @@ def delete_employee():
             print("PostgreSQL connection is closed")
 
     return jsonify(answer_to_send)
+
+
+@app.route("/run_script", methods=["GET"])
+def run_script():
+    answer_to_send = {}
+    try:
+        os.system("python facial_recognition.py")
+        answer_to_send["message"] = "Script successfully executed"
+    except Exception as ex:
+        print(ex)
+        answer_to_send["message"] = "Cannot run the script"
+    finally:
+        print("finished.")
+
+    return answer_to_send
 
 
 # @app.route("/<string:name>", methods=["GET", "POST"])

@@ -86,6 +86,7 @@ class RecentRecords extends Component {
         <div>
           <ol>{this.createList()}</ol>
         </div>
+        <hr />
       </div>
     );
   }
