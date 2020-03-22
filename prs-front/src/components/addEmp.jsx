@@ -51,6 +51,7 @@ export default class AddEmployee extends Component {
 
     return (
       <div>
+        <h2>Add Employee</h2>
         <input
           type="text"
           name="name"
@@ -64,6 +65,7 @@ export default class AddEmployee extends Component {
         />
         <input type="button" value="Add" onClick={this.handleRequest} />
         {component}
+        <hr />
       </div>
     );
   }

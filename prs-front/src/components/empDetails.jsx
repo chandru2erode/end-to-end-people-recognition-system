@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 
+import axios from "axios";
+
 class EmployeeDetails extends Component {
   constructor(props) {
     super(props);
@@ -16,26 +18,21 @@ class EmployeeDetails extends Component {
   };
 
   handleRequest = () => {
-    fetch("http://127.0.0.1:5000/get_employee?name=" + this.state.emp_name, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      }
-    })
-      .then(res => res.json())
+    axios
+      .get("http://127.0.0.1:5000/get_employee?name=" + this.state.emp_name)
       .then(result => {
-        // console.log(
-        //   JSON.stringify(result) !==
-        //     JSON.stringify({ error: "User not found..." })
-        // );
         if (
           result !== {} &&
-          JSON.stringify(result) !==
+          JSON.stringify(result["data"]) !==
             JSON.stringify({ error: "User not found..." })
         ) {
-          this.setState({ isLoaded: true, response: result });
+          this.setState({ isLoaded: true, response: result["data"] });
           console.log(result);
+        } else if (
+          JSON.stringify(result["data"]) ===
+          JSON.stringify({ error: "User not found..." })
+        ) {
+          this.setState({ isLoaded: false, response: result["data"] });
         }
       })
       .catch(error => console.log(error));
@@ -62,10 +59,14 @@ class EmployeeDetails extends Component {
           </span>
         </div>
       );
+    } else if (Object.keys(this.state.response).length === 1) {
+      var component = <div>{this.state.response["error"]}</div>;
     }
 
     return (
       <div>
+        <hr />
+        <h2>Attendance details of Employee</h2>
         <input
           type="text"
           name="employee_name"
@@ -79,12 +80,10 @@ class EmployeeDetails extends Component {
           onClick={this.handleRequest}
         />
         {component}
+        <hr />
       </div>
     );
   }
-}
-function newFunction() {
-  return this;
 }
 
 export default EmployeeDetails;

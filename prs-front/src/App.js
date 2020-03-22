@@ -15,7 +15,7 @@ class App extends Component {
     this.state = {
       response: ""
     };
-    this.runPythonScript();
+    // this.runPythonScript();
   }
 
   runPythonScript = () => {
@@ -38,10 +38,10 @@ class App extends Component {
     return (
       <div className="App">
         {this.state.response}
-        {/* <EmployeeDetails /> */}
-        {/* <AddEmployee /> */}
-        {/* <ALlEmployeeDetails /> */}
-        {/* <RecentRecords /> */}
+        <EmployeeDetails />
+        <AddEmployee />
+        <ALlEmployeeDetails />
+        <RecentRecords />
         <DeleteEmployee />
       </div>
     );
