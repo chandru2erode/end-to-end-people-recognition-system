@@ -38,49 +38,61 @@ class EmployeeDetails extends Component {
       .catch(error => console.log(error));
   };
 
+  // correctify = name => name.replace("_", " ");
+
   render() {
-    // var component;
+    const response = this.state.response;
     if (this.state.isLoaded) {
-      console.log(this.state.response);
-      var len = Object.keys(this.state.response).length;
+      console.log(response);
+      var len = Object.keys(response).length;
       console.log("Size: " + len);
+      var column_names = Object.keys(response[len - 1]);
       var component = (
-        <div>
-          <span>name: {this.state.response[len - 1]["name"]}</span>
-          <br />
-          <span>date: {this.state.response[len - 1]["date"]}</span>
-          <br />
-          <span>
-            arrival_time: {this.state.response[len - 1]["arrival_time"]}
-          </span>
-          <br />
-          <span>
-            departure_time: {this.state.response[len - 1]["departure_time"]}
-          </span>
+        <div className="cnt-result grid-item">
+          <div className="cnt-result-line">
+            <span className="field-name">Name: </span>
+            <span>{response[len - 1]["name"]}</span>
+          </div>
+          <div className="cnt-result-line">
+            <span className="field-name">Date: </span>
+            <span>{response[len - 1]["date"]}</span>
+          </div>
+          <div className="cnt-result-line">
+            <span className="field-name">Arrival Time: </span>
+            <span>{response[len - 1]["arrival_time"]}</span>
+          </div>
+          <div className="cnt-result-line">
+            <span className="field-name">Departure Time: </span>
+            <span>{response[len - 1]["departure_time"]}</span>
+          </div>
         </div>
       );
-    } else if (Object.keys(this.state.response).length === 1) {
-      var component = <div>{this.state.response["error"]}</div>;
+    } else if (Object.keys(response).length === 1) {
+      var component = <div>{response["error"]}</div>;
     }
 
     return (
-      <div>
-        <hr />
+      <div className="cmpnt">
         <h2>Attendance details of Employee</h2>
-        <input
-          type="text"
-          name="employee_name"
-          onChange={event => {
-            this.inputChangeListener(event);
-          }}
-        />
-        <input
-          type="button"
-          value="Fetch Details"
-          onClick={this.handleRequest}
-        />
+        <div className="cnt-form">
+          <input
+            className="input-box"
+            style={{ marginRight: "8px" }}
+            type="text"
+            name="employee_name"
+            onChange={event => {
+              this.inputChangeListener(event);
+            }}
+          />
+          <button
+            className="btn text-btn"
+            style={{ marginLeft: "8px" }}
+            onClick={this.handleRequest}
+          >
+            Fetch Details
+          </button>
+        </div>
         {component}
-        <hr />
       </div>
     );
   }

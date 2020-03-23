@@ -1,5 +1,6 @@
 # * ---------- IMPORTS --------- *
 import os
+
 # import re
 import time
 import threading
@@ -39,8 +40,8 @@ time.sleep(2.0)
 def DATABASE_CONNECTION():
     try:
         return psycopg2.connect(
-            user="USERNAME",
-            password="PASSWORD",
+            user="saroopa",
+            password="",
             host="127.0.0.1",
             port="5432",
             database="facial_recognition",

@@ -1,5 +1,15 @@
+@import url("https://fonts.googleapis.com/css?family=Lato:400,700&display=swap");
+
 .App {
-  text-align: center;
+  background-color: #eeeeee;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  min-width: 100vw;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: "Lato", sans-serif;
 }
 
 .App-logo {
@@ -28,6 +38,124 @@
   color: #61dafb;
 }
 
+.container {
+  /* margin: 2vh; */
+}
+
+.btn {
+  background: none;
+  cursor: pointer;
+}
+
+.nav-btn {
+  position: fixed;
+}
+
+.icon-btn {
+  border: none;
+  color: rgb(30, 30, 30);
+  transition: 0.2s ease-in;
+}
+
+.icon-btn:hover {
+  color: rgb(75, 75, 75);
+}
+
+.admin-btn {
+  transform: translate(95vw, 2vw);
+}
+
+.home-btn {
+  transform: translate(0.7vw, 0.7vw);
+}
+
+.text-btn {
+  height: 1.9rem;
+  font-size: 0.9rem;
+  border-radius: 5px;
+  border: 1.5px solid rgb(30, 30, 30);
+  background-color: whitesmoke;
+  transition: 0.4s ease-in;
+}
+
+.text-btn:hover {
+  background-color: rgb(30, 30, 30);
+  color: whitesmoke;
+}
+
+.component-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.cnt-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.cnt-right {
+  flex: 1;
+  left: 50%;
+}
+
+.input-box {
+  min-width: 60px;
+  width: 10vw;
+  height: 1.5rem;
+  border: 2px solid rgba(112, 112, 112, 0.7);
+  border-radius: 4px;
+  font-size: 0.85rem;
+  padding-left: 1em;
+  padding-right: 1em;
+}
+
+.cmpnt {
+  padding: 10px;
+  padding-left: 30px;
+}
+
+.cnt-form {
+  margin: 10px 0 16px 0;
+}
+
+.cnt-grid {
+  display: grid;
+}
+
+.grid-item {
+  display: -moz-inline-grid;
+  /* border: 1.5px solid rgb(75, 75, 75); */
+  border-radius: 5px;
+  transition: 0.3s ease-in;
+  margin: 12px 0;
+  padding: 10px;
+  width: 50%;
+  background: linear-gradient(145deg, #ffffff, #e6e6e6);
+  box-shadow: 11px 11px 22px #c9c9c9, -11px -11px 22px #ffffff;
+}
+
+.cnt-result {
+  font-size: 1.1rem;
+  line-height: 1.6rem;
+}
+
+.cnt-result-line {
+  display: flex;
+}
+
+.cnt-result-line span {
+  flex: 1;
+}
+
+.field-name {
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+/* Keyframes for animations */
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

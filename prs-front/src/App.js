@@ -1,57 +1,26 @@
-import React, { Component } from "react";
-import "./App.css";
-import EmployeeDetails from "./components/empDetails";
-import AddEmployee from "./components/addEmp";
-import ALlEmployeeDetails from "./components/allEmpDetails";
-import RecentRecords from "./components/recentRecords";
-import DeleteEmployee from "./components/deleteEmp";
+import React from "react";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
-import axios from "axios";
-// import { PythonShell } from "python-shell";
+import LandingPage from "./pages/landingPage";
+import AdminPage from "./pages/adminPage";
+import NotFoundPage from "./pages/notFoundPage";
 
-class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      response: null
-    };
-    // this.runPythonScript();
-    this.getVideoFeed();
-  }
-
-  runPythonScript = () => {
-    axios.get("http://127.0.0.1:5000/run_script").then(result => {
-      console.log(result);
-      this.setState({ response: result["data"]["message"] });
-    });
-  };
-
-  getVideoFeed = () => {
-    fetch("http://127.0.0.1:5000/video_feed").then(res => {
-      console.log(res);
-      this.setState({ response: res["body"] });
-      console.log(res["body"]);
-    });
-  };
-
-  render() {
-    return (
-      <div className="App" style={{ margin: "2vh" }}>
-        <div>
-          <img
-            src="http://127.0.0.1:5000/video_feed"
-            height="360px"
-            alt="Stream cannot be displayed"
-          />
-        </div>
-        <EmployeeDetails />
-        <AddEmployee />
-        <ALlEmployeeDetails />
-        <RecentRecords />
-        <DeleteEmployee />
-      </div>
-    );
-  }
+function App() {
+  return (
+    <Router>
+      <Switch>
+        <Route exact path="/">
+          <LandingPage />
+        </Route>
+        <Route path="/admin">
+          <AdminPage />
+        </Route>
+        <Route>
+          <NotFoundPage />
+        </Route>
+      </Switch>
+    </Router>
+  );
 }
 
 export default App;

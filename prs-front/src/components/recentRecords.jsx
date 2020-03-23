@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import axios from "axios";
 
 class RecentRecords extends Component {
@@ -38,19 +38,28 @@ class RecentRecords extends Component {
           "end-to-end-people-recognition-system/"
         )[1]; */
       return (
-        <li key={record} style={{ display: "flex", flexDirection: "row" }}>
-          <div style={{ flex: 1 }}>
-            <span>Name: {response[record]["name"]}</span>
-            <br />
-            <span>Date: {response[record]["date"]}</span>
-            <br />
-            <span>Arrival Time: {response[record]["arrival_time"]}</span>
-            <br />
-            <span>Departure Time: {response[record]["departure_time"]}</span>
-            <br />
-          </div>
-          <div style={{ flex: 1 }}>
-            {/* <span>Arrival</span>
+        <div className="grid-item">
+          <div key={record} style={{ display: "flex", flexDirection: "row" }}>
+            <div className="cnt-result" style={{ flex: 1 }}>
+              <div className="cnt-result-line">
+                <span className="field-name">Name: </span>
+                <span>{response[record]["name"]}</span>
+              </div>
+              <div className="cnt-result-line">
+                <span className="field-name">Date: </span>
+                <span>{response[record]["date"]}</span>
+              </div>
+              <div className="cnt-result-line">
+                <span className="field-name">Arrival Time: </span>
+                <span>{response[record]["arrival_time"]}</span>
+              </div>
+              <div className="cnt-result-line">
+                <span className="field-name">Departure Time: </span>
+                <span>{response[record]["departure_time"]}</span>
+              </div>
+            </div>
+            {/* <div style={{ flex: 1 }}>
+              <span>Arrival</span>
             <img
               src={require(response[record]["arrival_picture"])}
               alt="arrival picture"
@@ -60,33 +69,35 @@ class RecentRecords extends Component {
             <img
               src={response[record]["departure_picture"]}
               alt="departure picture"
-            /> */}
+            />
+            </div> */}
           </div>
-        </li>
+        </div>
       );
     });
   };
 
   render() {
     return (
-      <div>
-        <div>
-          <h2 className="title">Get last 'n' records</h2>
+      <div style={{ padding: "10px", paddingLeft: "30px" }}>
+        <h2 className="title">Get last 'n' records</h2>
+        <div className="cnt-form">
           <input
+            className="input-box"
+            style={{ marginRight: "8px" }}
             type="number"
             value={this.state.n}
             onChange={event => this.inputChangeListener(event)}
           />
-          <input
-            type="button"
-            value="Fetch Details"
+          <button
+            className="btn text-btn"
+            style={{ marginLeft: "8px" }}
             onClick={this.handleRequest}
-          />
+          >
+            Fetch Details
+          </button>
         </div>
-        <div>
-          <ol>{this.createList()}</ol>
-        </div>
-        <hr />
+        <div className="cnt-grid">{this.createList()}</div>
       </div>
     );
   }
