@@ -2,10 +2,13 @@
 # Required Library Imports
 import os
 import re
+
 # import threading
 import time
+
 # import queue
 import requests
+
 # import cv2
 import face_recognition
 import numpy as np
@@ -45,7 +48,7 @@ class FacialRecognizer:
     # def read(self):
     #     """ Read each frame in the queue. """
     #     return self.que.get()
-    
+
     def detect(self, frame):
         global KNOWN_FACE_ENCODINGS, KNOWN_FACE_NAMES
 
@@ -73,21 +76,27 @@ class FacialRecognizer:
             #     name = KNOWN_FACE_NAMES[first_match_index]
 
             # Using the known face with the smallest distance with threshold to the new face
-            face_distances = face_recognition.face_distance(KNOWN_FACE_ENCODINGS, face_encoding)
+            face_distances = face_recognition.face_distance(
+                KNOWN_FACE_ENCODINGS, face_encoding
+            )
             best_match_index = np.argmin(face_distances)
 
             if face_distances[best_match_index] < 0.5:
                 name = KNOWN_FACE_NAMES[best_match_index]
 
                 # * ---------- SAVE data to send to the API -------- *
-                json_to_export['name'] = name
-                json_to_export['hour'] = f'{time.localtime().tm_hour}:{time.localtime().tm_min}'
-                json_to_export['date'] = f'{time.localtime().tm_year}-{time.localtime().tm_mon}-{time.localtime().tm_mday}'
-                json_to_export['picture_array'] = frame.tolist()
-
+                json_to_export["name"] = name
+                json_to_export[
+                    "hour"
+                ] = f"{time.localtime().tm_hour}:{time.localtime().tm_min}"
+                json_to_export[
+                    "date"
+                ] = f"{time.localtime().tm_year}-{time.localtime().tm_mon}-{time.localtime().tm_mday}"
+                json_to_export["picture_array"] = frame.tolist()
                 # * ---------- SEND data to API --------- *
-                request = requests.post(url='http://127.0.0.1:5000/receive_data',
-                                        json=json_to_export)
+                request = requests.post(
+                    url="http://127.0.0.1:5000/receive_data", json=json_to_export
+                )
                 print("Status: ", request.status_code)
 
             face_names.append(name)
@@ -105,17 +114,17 @@ KNOWN_FACE_ENCODINGS = []
 KNOWN_FACE_NAMES = []
 KNOWN_FACES_FILENAMES = []
 
-for (dirpath, dirnames, filenames) in os.walk('assets/img/users/'):
+for (dirpath, dirnames, filenames) in os.walk("assets/img/users/"):
     KNOWN_FACES_FILENAMES.extend(filenames)
     break
 
 for filename in KNOWN_FACES_FILENAMES:
-    face = face_recognition.load_image_file('assets/img/users/' + filename)
-    KNOWN_FACE_NAMES.append(re.sub("[0-9]", '', filename[:-4]))
+    face = face_recognition.load_image_file("assets/img/users/" + filename)
+    KNOWN_FACE_NAMES.append(re.sub("[0-9]", "", filename[:-4]))
     try:
         KNOWN_FACE_ENCODINGS.append(face_recognition.face_encodings(face)[0])
     except IndexError:
-        print(f'Error encoding this file - {filename}')
+        print(f"Error encoding this file - {filename}")
 
 
 # while True:
@@ -125,9 +134,9 @@ for filename in KNOWN_FACES_FILENAMES:
 #     # Grab a single frame of video
 #     FRAME = VIDEO_CAPTURE.read()
 
-    # # Hit 'q' on the keyboard to quit!
-    # if cv2.waitKey(1) & 0xFF == ord('q'):
-    #     break
+# # Hit 'q' on the keyboard to quit!
+# if cv2.waitKey(1) & 0xFF == ord('q'):
+#     break
 
 # Release handle to the webcam
 # VIDEO_CAPTURE.release()

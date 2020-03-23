@@ -24,7 +24,7 @@ FILE_PATH = os.path.dirname(os.path.realpath(__file__))
 app = Flask(__name__)
 CORS(app, support_credentials=True)
 
-# Initialize the video stream 
+# Initialize the video stream
 video_stream = VideoStream(src=0).start()
 time.sleep(2.0)
 
@@ -39,8 +39,8 @@ time.sleep(2.0)
 def DATABASE_CONNECTION():
     try:
         return psycopg2.connect(
-            user="tsuser",
-            password="tsuser123",
+            user="USERNAME",
+            password="PASSWORD",
             host="127.0.0.1",
             port="5432",
             database="facial_recognition",
@@ -49,7 +49,9 @@ def DATABASE_CONNECTION():
     except Exception as e:
         print("[!] ", e)
 
+
 def detect_faces():
+    time.sleep(5.0)
     global video_stream, outputFrame, lock
 
     # initialize the facial recognizer
@@ -70,33 +72,39 @@ def detect_faces():
             # Draw a label with a name below the face
             # cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
             font = cv2.FONT_HERSHEY_DUPLEX
-            cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
+            cv2.putText(
+                frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1
+            )
 
         # acquire the lock, set the output frame, and release the lock
         with lock:
             outputFrame = frame.copy()
 
+
 def generate():
     # grab global references to the output frame and lock variables
     global outputFrame, lock
 
-	# loop over frames from the output stream
+    # loop over frames from the output stream
     while True:
-		# wait until the lock is acquired
+        # wait until the lock is acquired
         with lock:
-			# check if the output frame is available, otherwise skip the iteration of the loop
+            # check if the output frame is available, otherwise skip the iteration of the loop
             if outputFrame is None:
                 continue
 
-			# encode the frame in JPEG format
+            # encode the frame in JPEG format
             (flag, encodedImage) = cv2.imencode(".jpg", outputFrame)
 
-			# ensure the frame was successfully encoded
+            # ensure the frame was successfully encoded
             if not flag:
                 continue
 
-		# yield the output frame in the byte format
-        yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + bytearray(encodedImage) + b'\r\n')
+        # yield the output frame in the byte format
+        yield (
+            b"--frame\r\n"
+            b"Content-Type: image/jpeg\r\n\r\n" + bytearray(encodedImage) + b"\r\n"
+        )
 
 
 # * -----------------------------------  ROUTES ---------------------------------------- *
@@ -104,15 +112,15 @@ def generate():
 # * ---------- Stream video feed from the face recognition ---------- *
 @app.route("/")
 def index():
-	# return the rendered template
-	return render_template("index.html")
+    # return the rendered template
+    return render_template("index.html")
+
 
 # * ---------- Send video feed from the face recognition to the web ---------- *
 @app.route("/video_feed")
 def video_feed():
     # return the response generated along with the specific media type (mime type)
-    return Response(generate(),
-            mimetype= "multipart.x-mixed-replace; boundary=frame")
+    return Response(generate(), mimetype="multipart/x-mixed-replace; boundary=frame")
 
 
 # * ---------- Get data from the face recognition ---------- *
@@ -450,6 +458,7 @@ if __name__ == "__main__":
     t = threading.Thread(target=detect_faces)
     t.daemon = True
     t.start()
+    print("thread")
 
     # * --- DEBUG MODE: --- *
     app.run(host="127.0.0.1", port=5000, debug=True, threaded=True, use_reloader=False)
