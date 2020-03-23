@@ -1,6 +1,6 @@
 # * ---------- IMPORTS --------- *
 import os
-import re
+# import re
 import time
 import threading
 from facial_recognition import FacialRecognizer
