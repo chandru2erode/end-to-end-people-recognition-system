@@ -13,9 +13,10 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      response: ""
+      response: null
     };
-    this.runPythonScript();
+    // this.runPythonScript();
+    this.getVideoFeed();
   }
 
   runPythonScript = () => {
@@ -23,21 +24,26 @@ class App extends Component {
       console.log(result);
       this.setState({ response: result["data"]["message"] });
     });
+  };
 
-    /* PythonShell.run(
-      "./backend-scripts/facial_recognition.py",
-      { mode: "text" },
-      function(err) {
-        if (err) throw err;
-        console.log("finished");
-      }
-    ); */
+  getVideoFeed = () => {
+    fetch("http://127.0.0.1:5000/video_feed").then(res => {
+      console.log(res);
+      this.setState({ response: res["body"] });
+      console.log(res["body"]);
+    });
   };
 
   render() {
     return (
-      <div className="App">
-        {this.state.response}
+      <div className="App" style={{ margin: "2vh" }}>
+        <div>
+          <img
+            src="http://127.0.0.1:5000/video_feed"
+            height="360px"
+            alt="Stream cannot be displayed"
+          />
+        </div>
         <EmployeeDetails />
         <AddEmployee />
         <ALlEmployeeDetails />
