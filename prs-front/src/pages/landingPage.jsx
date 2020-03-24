@@ -1,5 +1,7 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
+import { withSnackbar } from "notistack";
 
 import "../App.css";
 
@@ -18,7 +20,7 @@ class LandingPage extends Component {
           <Link className="btn nav-btn icon-btn admin-btn" to="/admin">
             <FontAwesomeIcon icon={faUserCog} size="2x" pull="left" />
           </Link>
-          <div className="component-container">
+          <div className="cnt-cmpnt">
             <div className="cnt-left">
               <VideoFeed />
               <EmployeeDetails />
@@ -33,4 +35,8 @@ class LandingPage extends Component {
   }
 }
 
-export default LandingPage;
+LandingPage.propTypes = {
+  enqueueSnackbar: PropTypes.func.isRequired
+};
+
+export default withSnackbar(LandingPage);

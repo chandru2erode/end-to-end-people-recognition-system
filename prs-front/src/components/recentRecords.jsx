@@ -1,5 +1,8 @@
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
+import PropTypes from "prop-types";
 import axios from "axios";
+
+import { withSnackbar } from "notistack";
 
 class RecentRecords extends Component {
   constructor(props) {
@@ -21,7 +24,12 @@ class RecentRecords extends Component {
         console.log(result);
         this.setState({ response: result["data"] });
       })
-      .catch(error => console.log(error));
+      .catch(error => {
+        console.log(error);
+        this.props.enqueueSnackbar("Looks like Network Error", {
+          variant: "error"
+        });
+      });
   };
 
   inputChangeListener = event => {
@@ -90,7 +98,7 @@ class RecentRecords extends Component {
             onChange={event => this.inputChangeListener(event)}
           />
           <button
-            className="btn text-btn"
+            className="btn text-btn green-btn"
             style={{ marginLeft: "8px" }}
             onClick={this.handleRequest}
           >
@@ -103,4 +111,8 @@ class RecentRecords extends Component {
   }
 }
 
-export default RecentRecords;
+RecentRecords.propTypes = {
+  enqueueSnackbar: PropTypes.func.isRequired
+};
+
+export default withSnackbar(RecentRecords);
