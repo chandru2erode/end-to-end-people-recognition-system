@@ -40,8 +40,8 @@ time.sleep(2.0)
 def DATABASE_CONNECTION():
     try:
         return psycopg2.connect(
-            user="saroopa",
-            password="",
+            user="USERNAME",
+            password="PASSWORD",
             host="127.0.0.1",
             port="5432",
             database="facial_recognition",
@@ -346,13 +346,20 @@ def get_employee_list():
         connection = DATABASE_CONNECTION()
         cursor = connection.cursor()
 
-        get_employee_list_query = f"SELECT DISTINCT name from users;"
+        column_cursor = connection.cursor()
+        schema_query = f"SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'users';"
+        column_cursor.execute(schema_query)
+        column_names = column_cursor.fetchall()
+
+        get_employee_list_query = f"SELECT DISTINCT name, photo_path from users;"
         cursor.execute(get_employee_list_query)
 
         employee_list = cursor.fetchall()
 
         for key, value in enumerate(employee_list):
-            answer_to_send[key] = value[0]
+            answer_to_send[key] = {}
+            for key_o, value_o in enumerate(value):
+                answer_to_send[key][column_names[key_o][0]] = str(value_o)
     except:
         return f"Unable to fetch the employee list. Please try after sometime."
     finally:
