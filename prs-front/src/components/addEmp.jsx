@@ -1,14 +1,14 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import axios from "axios";
+import { withSnackbar } from "notistack";
 
-export default class AddEmployee extends Component {
+class AddEmployee extends Component {
   constructor(props) {
     super(props);
     this.state = {
       emp_name: "",
-      imageFile: null,
-      isSuccess: false,
-      responseString: ""
+      imageFile: null
     };
   }
 
@@ -33,40 +33,53 @@ export default class AddEmployee extends Component {
     axios
       .post("http://127.0.0.1:5000/add_employee", data, {})
       .then(result => {
-        this.setState({
-          responseString: result["data"]["message"],
-          isSuccess: true
-        });
+        this.props.enqueueSnackbar(result["data"]["message"]);
         console.log(result);
       })
-      .catch(error => console.log(error));
+      .catch(error => {
+        console.log(error);
+        this.props.enqueueSnackbar(error);
+      });
 
     console.log(this.state.responseString);
   };
 
   render() {
-    if (this.state.isSuccess) {
-      var component = <div>{this.state.responseString}</div>;
-    }
-
     return (
-      <div>
+      <div className="card">
         <h2>Add Employee</h2>
-        <input
-          type="text"
-          name="name"
-          value={this.state.emp_name}
-          onChange={event => this.inputChangeListener(event)}
-        />
-        <input
-          type="file"
-          name="image"
-          onChange={event => this.fileChangeListener(event)}
-        />
-        <input type="button" value="Add" onClick={this.handleRequest} />
-        {component}
+        <div className="cnt-input">
+          <input
+            className="input-box"
+            type="text"
+            name="name"
+            value={this.state.emp_name}
+            onChange={event => this.inputChangeListener(event)}
+          />
+          <input
+            style={{ fontSize: "0.8rem" }}
+            type="file"
+            name="image"
+            onChange={event => this.fileChangeListener(event)}
+          />
+
+          <button
+            className="btn text-btn card-btn"
+            onClick={this.handleRequest}
+          >
+            Add
+          </button>
+        </div>
+        <br />
+        <br />
         <hr />
       </div>
     );
   }
 }
+
+AddEmployee.propTypes = {
+  enqueueSnackbar: PropTypes.func.isRequired
+};
+
+export default withSnackbar(AddEmployee);

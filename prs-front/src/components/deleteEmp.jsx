@@ -1,12 +1,13 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import axios from "axios";
+import { withSnackbar } from "notistack";
 
 class DeleteEmployee extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      emp_name: "",
-      response: ""
+      emp_name: ""
     };
   }
 
@@ -19,13 +20,16 @@ class DeleteEmployee extends Component {
         console.log(result);
         if (result["status"] >= 200 && result["status"] < 300) {
           // Successful response
-          this.setState({ response: result["data"]["message"] });
+          this.props.enqueueSnackbar(result["data"]["message"]);
         } else {
           // Some error (Client side or server side)
-          this.setState({ response: result["statusText"] });
+          this.props.enqueueSnackbar(result["data"]["statusText"]);
         }
       })
-      .catch(error => console.log(error));
+      .catch(error => {
+        console.log(error);
+        this.props.enqueueSnackbar(error);
+      });
   };
 
   inputChangeListener = event => {
@@ -35,21 +39,33 @@ class DeleteEmployee extends Component {
 
   render() {
     return (
-      <div>
+      <div className="card">
         <h2>Delete Employee</h2>
-        <input
-          type="text"
-          name="name"
-          value={this.state.emp_name}
-          onChange={event => this.inputChangeListener(event)}
-        />
-        <input type="button" value="Delete" onClick={this.handleRequest} />
+        <div className="cnt-input">
+          <input
+            className="input-box"
+            type="text"
+            name="name"
+            value={this.state.emp_name}
+            onChange={event => this.inputChangeListener(event)}
+          />
+          <button
+            className="btn text-btn card-btn"
+            onClick={this.handleRequest}
+          >
+            Delete
+          </button>
+        </div>
         <br />
-        {this.state.response}
+        <br />
         <hr />
       </div>
     );
   }
 }
 
-export default DeleteEmployee;
+DeleteEmployee.propTypes = {
+  enqueueSnackbar: PropTypes.func.isRequired
+};
+
+export default withSnackbar(DeleteEmployee);

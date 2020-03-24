@@ -38,7 +38,7 @@ class RecentRecords extends Component {
           "end-to-end-people-recognition-system/"
         )[1]; */
       return (
-        <div className="grid-item">
+        <div className="result-item">
           <div key={record} style={{ display: "flex", flexDirection: "row" }}>
             <div className="cnt-result" style={{ flex: 1 }}>
               <div className="cnt-result-line">
@@ -97,7 +97,7 @@ class RecentRecords extends Component {
             Fetch Details
           </button>
         </div>
-        <div className="cnt-grid">{this.createList()}</div>
+        <div>{this.createList()}</div>
       </div>
     );
   }
