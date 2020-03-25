@@ -12,14 +12,22 @@ class App extends Component {
       <Router>
         <Switch>
           <Route exact path="/">
-            <LandingPage />
+            <SnackbarProvider
+              maxSnack={3}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "center"
+              }}
+            >
+              <LandingPage />
+            </SnackbarProvider>
           </Route>
           <Route path="/admin">
             <SnackbarProvider
-              maxSnack={4}
+              maxSnack={3}
               anchorOrigin={{
                 vertical: "bottom",
-                horizontal: "left"
+                horizontal: "center"
               }}
             >
               <AdminPage />

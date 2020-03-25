@@ -20,15 +20,21 @@ class DeleteEmployee extends Component {
         console.log(result);
         if (result["status"] >= 200 && result["status"] < 300) {
           // Successful response
-          this.props.enqueueSnackbar(result["data"]["message"]);
+          this.props.enqueueSnackbar(result["data"]["message"], {
+            variant: "success"
+          });
         } else {
           // Some error (Client side or server side)
-          this.props.enqueueSnackbar(result["data"]["statusText"]);
+          this.props.enqueueSnackbar(result["data"]["statusText"], {
+            variant: "error"
+          });
         }
       })
       .catch(error => {
         console.log(error);
-        this.props.enqueueSnackbar(error);
+        this.props.enqueueSnackbar("Looks like Network Error", {
+          variant: "error"
+        });
       });
   };
 
@@ -47,10 +53,11 @@ class DeleteEmployee extends Component {
             type="text"
             name="name"
             value={this.state.emp_name}
+            placeholder="liam"
             onChange={event => this.inputChangeListener(event)}
           />
           <button
-            className="btn text-btn card-btn"
+            className="btn text-btn card-btn red-btn"
             onClick={this.handleRequest}
           >
             Delete

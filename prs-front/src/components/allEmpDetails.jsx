@@ -1,5 +1,8 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import axios from "axios";
+
+import { withSnackbar } from "notistack";
 
 import { faRedoAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,8 +22,14 @@ class ALlEmployeeDetails extends Component {
       .then(result => {
         console.log(result);
         this.setState({ response: result["data"] });
+        this.props.enqueueSnackbar("Results reloaded!", { variant: "success" });
       })
-      .catch(error => console.log(error));
+      .catch(error => {
+        console.log(error);
+        this.props.enqueueSnackbar("Looks like Network Error", {
+          variant: "error"
+        });
+      });
   };
 
   createList = () => {
@@ -54,14 +63,24 @@ class ALlEmployeeDetails extends Component {
   render() {
     return (
       <div>
-        <h2>List of all employees</h2>
-        <button className="btn icon-btn" onClick={this.handleRequest}>
-          <FontAwesomeIcon icon={faRedoAlt} size="2x" />
-        </button>
+        <div className="cnt-head">
+          <h2>List of all employees</h2>
+          <button className="btn icon-btn" onClick={this.handleRequest}>
+            <FontAwesomeIcon
+              icon={faRedoAlt}
+              color="rgb(3, 167, 39)"
+              size="2x"
+            />
+          </button>
+        </div>
         <div className="cnt-grid">{this.createList()}</div>
       </div>
     );
   }
 }
 
-export default ALlEmployeeDetails;
+ALlEmployeeDetails.propTypes = {
+  enqueueSnackbar: PropTypes.func.isRequired
+};
+
+export default withSnackbar(ALlEmployeeDetails);

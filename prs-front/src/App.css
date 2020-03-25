@@ -1,5 +1,13 @@
 @import url("https://fonts.googleapis.com/css?family=Lato:400,700&display=swap");
 
+input:focus {
+  outline: none;
+}
+
+button:focus {
+  outline: none;
+}
+
 .App {
   background-color: #eeeeee;
   margin: 0;
@@ -77,15 +85,32 @@
   border: 1.5px solid rgb(30, 30, 30);
   background-color: whitesmoke;
   transition: 0.4s ease-in;
-}
-
-.text-btn:hover {
-  background-color: rgb(30, 30, 30);
-  color: whitesmoke;
+  font-weight: bold;
 }
 
 .card-btn {
   min-width: 5rem;
+  margin-right: 8rem;
+}
+/* rgb(3, 167, 39) */
+.green-btn {
+  border: 1.5px solid rgb(3, 167, 39);
+  color: rgb(3, 167, 39);
+}
+
+.green-btn:hover {
+  background-color: rgb(3, 167, 39);
+  color: whitesmoke;
+}
+
+.red-btn {
+  border: 1.5px solid rgb(219, 14, 14);
+  color: rgb(219, 14, 14);
+}
+
+.red-btn:hover {
+  background-color: rgb(219, 14, 14);
+  color: whitesmoke;
 }
 
 ::-webkit-file-upload-button {
@@ -103,33 +128,41 @@
   color: rgb(95, 95, 95);
 }
 
-.component-container {
+.cnt-cmpnt {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
 }
 
 .cnt-left {
-  flex: 1;
+  flex: 3;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  /* justify-content: space-around; */
 }
 
 .cnt-right {
-  flex: 1;
+  flex: 2;
   left: 50%;
 }
 
 .input-box {
   min-width: 60px;
-  width: 10vw;
+  width: 14vw;
   height: 1.5rem;
-  border: 2px solid rgba(112, 112, 112, 0.7);
-  border-radius: 4px;
+  border: none;
+  border-bottom: 2px solid rgba(112, 112, 112, 0.7);
+  border-radius: 0;
   font-size: 0.85rem;
   padding-left: 1em;
   padding-right: 1em;
+  margin-right: 1.5rem;
+  background-color: inherit;
+  transition: 0.1s ease-in;
+}
+
+.input-box:focus {
+  border-bottom: 2px solid rgba(38, 66, 122, 0.7);
 }
 
 .cmpnt {
@@ -173,7 +206,7 @@
   transition: 0.3s ease-in;
   margin: 12px 0;
   padding: 10px;
-  width: 50%;
+  width: 70%;
   background: linear-gradient(145deg, #ffffff, #e6e6e6);
   box-shadow: 11px 11px 22px #c9c9c9, -11px -11px 22px #ffffff;
 }
@@ -217,7 +250,13 @@
 .cnt-input {
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: space-between;
+}
+
+.cnt-head {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 /* Keyframes for animations */

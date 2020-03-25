@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { withSnackbar } from "notistack";
 
 import axios from "axios";
 
@@ -33,9 +35,15 @@ class EmployeeDetails extends Component {
           JSON.stringify({ error: "User not found..." })
         ) {
           this.setState({ isLoaded: false, response: result["data"] });
+          this.props.enqueueSnackbar("No such Employee found...", {
+            variant: "warning"
+          });
         }
       })
-      .catch(error => console.log(error));
+      .catch(error => {
+        console.log(error);
+        this.props.enqueueSnackbar("Looks like Network Error");
+      });
   };
 
   // correctify = name => name.replace("_", " ");
@@ -67,9 +75,9 @@ class EmployeeDetails extends Component {
           </div>
         </div>
       );
-    } else if (Object.keys(response).length === 1) {
+    } /* else if (Object.keys(response).length === 1) {
       var component = <div>{response["error"]}</div>;
-    }
+    } */
 
     return (
       <div className="cmpnt">
@@ -85,7 +93,7 @@ class EmployeeDetails extends Component {
             }}
           />
           <button
-            className="btn text-btn"
+            className="btn text-btn green-btn"
             style={{ marginLeft: "8px" }}
             onClick={this.handleRequest}
           >
@@ -98,4 +106,8 @@ class EmployeeDetails extends Component {
   }
 }
 
-export default EmployeeDetails;
+EmployeeDetails.propTypes = {
+  enqueueSnackbar: PropTypes.func.isRequired
+};
+
+export default withSnackbar(EmployeeDetails);

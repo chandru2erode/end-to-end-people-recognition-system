@@ -33,12 +33,16 @@ class AddEmployee extends Component {
     axios
       .post("http://127.0.0.1:5000/add_employee", data, {})
       .then(result => {
-        this.props.enqueueSnackbar(result["data"]["message"]);
+        this.props.enqueueSnackbar(result["data"]["message"], {
+          variant: "success"
+        });
         console.log(result);
       })
       .catch(error => {
         console.log(error);
-        this.props.enqueueSnackbar(error);
+        this.props.enqueueSnackbar("Looks like Network Error", {
+          variant: "error"
+        });
       });
 
     console.log(this.state.responseString);
@@ -54,6 +58,7 @@ class AddEmployee extends Component {
             type="text"
             name="name"
             value={this.state.emp_name}
+            placeholder="liam"
             onChange={event => this.inputChangeListener(event)}
           />
           <input
@@ -64,7 +69,7 @@ class AddEmployee extends Component {
           />
 
           <button
-            className="btn text-btn card-btn"
+            className="btn text-btn card-btn green-btn"
             onClick={this.handleRequest}
           >
             Add
