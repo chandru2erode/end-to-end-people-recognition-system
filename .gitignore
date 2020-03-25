@@ -10,3 +10,6 @@
 
 #ignore node_modules sub-directory in the prs-front directory
 /prs-front/node_modules
+
+#ignore __pycache__ file directory
+/__pycache__
