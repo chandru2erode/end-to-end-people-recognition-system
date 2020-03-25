@@ -1,32 +1,35 @@
 # * ---------- IMPORTS --------- *
 import os
-
-# import re
 import time
 import threading
-from facial_recognition import FacialRecognizer
-from flask import Flask, request, jsonify, Response, render_template
-from flask_cors import CORS, cross_origin
-from imutils.video import VideoStream
+import importlib
 import psycopg2
 import cv2
 import numpy as np
+from flask import Flask, request, jsonify, Response, render_template
+from flask_cors import CORS, cross_origin
+from imutils import video, resize
+import facial_recognition
+
 
 # initialize the output frame and a lock used to ensure thread-safe
 # exchanges of the output frames (useful for multiple browsers/tabs
-# are viewing the stream)
-outputFrame = None
+# that are viewing the stream)
+output_frame = None
 lock = threading.Lock()
 
 # Get the relative path to this file (we will use it later)
 FILE_PATH = os.path.dirname(os.path.realpath(__file__))
+
+# initialize the facial recognizer
+f_r = facial_recognition.FacialRecognizer()
 
 # * ---------- Create App --------- *
 app = Flask(__name__)
 CORS(app, support_credentials=True)
 
 # Initialize the video stream
-video_stream = VideoStream(src=0).start()
+video_stream = video.VideoStream(src=2, framerate=32).start()
 time.sleep(2.0)
 
 # # * ---------- DATABASE CONFIG --------- *
@@ -53,17 +56,20 @@ def DATABASE_CONNECTION():
 
 def detect_faces():
     time.sleep(5.0)
-    global video_stream, outputFrame, lock
-
-    # initialize the facial recognizer
-    f_r = FacialRecognizer()
+    global output_frame, lock
+    f_r.encode()
 
     while True:
         frame = video_stream.read()
-        # frame = imutils.resize(frame, width=400)
+        resized_frame = resize(frame, width=160, height=120)
+
+        # Initialize empty list to store 640 x 480 frame - face location
+        face_locations = list()
 
         # Unpack the resultant tuple
-        face_locations, face_names = f_r.detect(frame)
+        resized_face_locations, face_names = f_r.detect(resized_frame)
+        for entry in resized_face_locations:
+            face_locations.append(tuple(map((4).__mul__, entry)))
 
         # Display the results
         for (top, right, bottom, left), name in zip(face_locations, face_names):
@@ -79,23 +85,23 @@ def detect_faces():
 
         # acquire the lock, set the output frame, and release the lock
         with lock:
-            outputFrame = frame.copy()
+            output_frame = frame.copy()
 
 
 def generate():
     # grab global references to the output frame and lock variables
-    global outputFrame, lock
+    global output_frame, lock
 
     # loop over frames from the output stream
     while True:
         # wait until the lock is acquired
         with lock:
             # check if the output frame is available, otherwise skip the iteration of the loop
-            if outputFrame is None:
+            if output_frame is None:
                 continue
 
             # encode the frame in JPEG format
-            (flag, encodedImage) = cv2.imencode(".jpg", outputFrame)
+            (flag, encoded_image) = cv2.imencode(".jpg", output_frame)
 
             # ensure the frame was successfully encoded
             if not flag:
@@ -104,7 +110,7 @@ def generate():
         # yield the output frame in the byte format
         yield (
             b"--frame\r\n"
-            b"Content-Type: image/jpeg\r\n\r\n" + bytearray(encodedImage) + b"\r\n"
+            b"Content-Type: image/jpeg\r\n\r\n" + bytearray(encoded_image) + b"\r\n"
         )
 
 
@@ -325,6 +331,12 @@ def add_employee():
             connection.close()
             print("PostgreSQL connection is closed")
 
+        try:
+            importlib.reload(facial_recognition)
+            print('Module loaded')
+        except Exception as err:
+            print(err)
+
     return jsonify(answer)
 
 
@@ -438,31 +450,10 @@ def run_script():
     return answer_to_send
 
 
-# @app.route("/<string:name>", methods=["GET", "POST"])
-# def insert_user(name):
-#     if request.method == "GET":
-#         try:
-#             print(name)
-#             if name == "favicon.ico":
-#                 raise Exception("Favicon AGAIN...!")
-#             print("Not favicon.ico")
-#             connection = DATABASE_CONNECTION()
-#             print(connection)
-#             cursor = connection.cursor()
-
-#             insert_query = f"INSERT INTO records (name) VALUES ({name});"
-#             cursor.execute(insert_query)
-#             connection.commit()
-#         except Exception as ex:
-#             print(ex)
-#         finally:
-#             connection.close()
-#     return "*** Success ***"
-
-
 # * -------------------- RUN SERVER -------------------- *
 if __name__ == "__main__":
-    # start a thread that will perform motion detection
+
+    # start a thread that will perform face detection
     t = threading.Thread(target=detect_faces)
     t.daemon = True
     t.start()
