@@ -13,3 +13,4 @@
 
 #ignore __pycache__ file directory
 __pycache__/
+__pycache__/facial_recognition.cpython-37.pyc
