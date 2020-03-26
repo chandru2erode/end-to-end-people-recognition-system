@@ -334,6 +334,7 @@ def add_employee():
         try:
             importlib.reload(facial_recognition)
             print('Module loaded')
+            f_r.encode()
         except Exception as err:
             print(err)
 
@@ -431,6 +432,12 @@ def delete_employee():
             cursor.close()
             connection.close()
             print("PostgreSQL connection is closed")
+        try:
+            importlib.reload(facial_recognition)
+            print('Module loaded')
+            f_r.encode()
+        except Exception as err:
+            print(err)
 
     return jsonify(answer_to_send)
 
