@@ -29,7 +29,7 @@ app = Flask(__name__)
 CORS(app, support_credentials=True)
 
 # Initialize the video stream
-video_stream = video.VideoStream(src=2, framerate=32).start()
+video_stream = video.VideoStream(src=0).start()
 time.sleep(2.0)
 
 # # * ---------- DATABASE CONFIG --------- *
@@ -43,8 +43,8 @@ time.sleep(2.0)
 def DATABASE_CONNECTION():
     try:
         return psycopg2.connect(
-            user="USERNAME",
-            password="PASSWORD",
+            user="saroopa",
+            password="",
             host="127.0.0.1",
             port="5432",
             database="facial_recognition",
@@ -333,7 +333,7 @@ def add_employee():
 
         try:
             importlib.reload(facial_recognition)
-            print('Module loaded')
+            print("Module loaded")
             f_r.encode()
         except Exception as err:
             print(err)
@@ -434,7 +434,7 @@ def delete_employee():
             print("PostgreSQL connection is closed")
         try:
             importlib.reload(facial_recognition)
-            print('Module loaded')
+            print("Module loaded")
             f_r.encode()
         except Exception as err:
             print(err)

@@ -18,6 +18,10 @@ class FacialRecognizer:
         self.known_face_names = []
         self.known_faces_filenames = []
 
+    def flush(self):
+        self.known_face_encodings = []
+        self.known_face_names = []
+        self.known_faces_filenames = []
 
     def detect(self, frame):
         # global known_face_encodings, known_face_names
@@ -58,7 +62,7 @@ class FacialRecognizer:
                     "date"
                 ] = f"{time.localtime().tm_year}-{time.localtime().tm_mon}-{time.localtime().tm_mday}"
                 json_to_export["picture_array"] = frame.tolist()
-                
+
                 # * ---------- SEND data to API --------- *
                 request = requests.post(
                     url="http://127.0.0.1:5000/receive_data", json=json_to_export
@@ -68,8 +72,8 @@ class FacialRecognizer:
             face_names.append(name)
         return face_locations, face_names
 
-
     def encode(self):
+        self.flush()
         for (dirpath, dirnames, filenames) in os.walk("assets/img/users/"):
             self.known_faces_filenames.extend(filenames)
             break
@@ -78,6 +82,8 @@ class FacialRecognizer:
             face = face_recognition.load_image_file("assets/img/users/" + filename)
             self.known_face_names.append(re.sub("[0-9]", "", filename[:-4]))
             try:
-                self.known_face_encodings.append(face_recognition.face_encodings(face)[0])
+                self.known_face_encodings.append(
+                    face_recognition.face_encodings(face)[0]
+                )
             except IndexError:
                 print(f"Error encoding this file - {filename}")
