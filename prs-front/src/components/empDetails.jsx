@@ -42,7 +42,9 @@ class EmployeeDetails extends Component {
       })
       .catch(error => {
         console.log(error);
-        this.props.enqueueSnackbar("Looks like Network Error");
+        this.props.enqueueSnackbar("Looks like Network Error", {
+          variant: "error"
+        });
       });
   };
 
@@ -75,9 +77,7 @@ class EmployeeDetails extends Component {
           </div>
         </div>
       );
-    } /* else if (Object.keys(response).length === 1) {
-      var component = <div>{response["error"]}</div>;
-    } */
+    }
 
     return (
       <div className="cmpnt">
